@@ -174,7 +174,7 @@ function render(r){
  }
  $('players').innerHTML=seats.join('');
  $('remaining').textContent=r.status==='waiting'?'—':r.remaining;$('odds').textContent=r.status==='waiting'||!r.remaining?'—':Math.round(r.chargedRemaining/r.remaining*100)+'%';$('pulses').replaceChildren(...Array.from({length:r.remaining},()=>{const el=document.createElement('span');el.className='pulse';el.title='Unknown pulse';return el;}));log(r.log);
- const active=r.status==='playing'&&r.viewerIndex===r.turn&&!busy;
+ const active=r.status==='playing'&&r.viewerIndex===r.turn&&!busy&&r.remaining>0;
  $('self').disabled=!active;$('opponent').disabled=true;$('reload').disabled=r.status!=='playing'||r.remaining!==0||busy;$('self').textContent=soloMode?'TARGET YOURSELF ↘':'TEST YOUR LUCK ↘';$('leave').textContent=soloMode?'EXIT SOLO ×':'LEAVE ROOM ×';
  $('turn-title').textContent=r.status==='waiting'?'Waiting for more players…':r.status==='over'?(r.winner?r.winner+' wins!':'Match complete'):r.viewerIndex===r.turn?'Your turn':r.players[r.turn].name+"'s turn";
  $('hint').textContent=r.status==='waiting'?'Share the room code. The match becomes active when a second player joins.':r.status==='over'?'Match complete. Leave the room to start another.':r.remaining===0?'Sequence empty — any player can reload.':r.viewerIndex===r.turn?'Choose yourself or tap an active player at the table.':'Waiting for the next player to act.';
