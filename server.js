@@ -83,11 +83,13 @@ io.on("connection", socket => {
     room.players.push({ id: socket.id, name: safeName(name, `Player ${room.players.length + 1}`), hp: 3, connected: true });
     socket.data.roomCode = normalized;
     socket.join(normalized);
-    room.turn = 0;
-    room.over = false;
-    room.winner = null;
-    room.round = 1;
-    if (room.players.length === 2) startRound(room);
+    if (room.players.length === 2) {
+      room.turn = 0;
+      room.over = false;
+      room.winner = null;
+      room.round = 1;
+      startRound(room);
+    }
     addLog(room, `${room.players[room.players.length - 1].name} joined (${room.players.length}/10 players).`);
     reply({ ok: true, code: normalized });
     sendRoom(room);
