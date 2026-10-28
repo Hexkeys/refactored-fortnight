@@ -3,29 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#101111">
+<meta name="theme-color" content="#190609">
 <title>QUANTUM // Roulette Online</title>
 <style>
-:root{color-scheme:dark;--bg:#090d20;--panel:#111a35;--line:#34446f;--muted:#a8b7dc;--green:#c7ff65;--red:#ff5c83;--cream:#f4f7ff;--cyan:#5df4ff;--pink:#ff5ca8}
+:root{color-scheme:dark;--bg:#160609;--panel:#2a0d14;--line:#6b2433;--muted:#d9aeb7;--green:#ff5368;--red:#ff365b;--cream:#fff2f3;--cyan:#ff9ca8;--pink:#ff3157}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:radial-gradient(ellipse at 50% -15%,#1a2550 0,transparent 56%),radial-gradient(ellipse at 100% 60%,#152044 0,transparent 45%),var(--bg);color:var(--cream);font:14px/1.55 system-ui,Segoe UI,sans-serif;min-height:100vh}
+body{margin:0;background:radial-gradient(ellipse at 50% -15%,#641526 0,transparent 56%),radial-gradient(ellipse at 100% 60%,#3d101c 0,transparent 45%),var(--bg);color:var(--cream);font:14px/1.55 system-ui,Segoe UI,sans-serif;min-height:100vh}
 button,input{font:inherit}
-button{cursor:pointer;border:1px solid #52648d;background:#1a2850;color:var(--cream);padding:11px 15px;border-radius:12px;font-weight:750;transition:transform .15s,border-color .15s,filter .15s}
+button{cursor:pointer;border:1px solid #52648d;background:#481321;color:var(--cream);padding:11px 15px;border-radius:12px;font-weight:750;transition:transform .15s,border-color .15s,filter .15s}
 button:hover:not(:disabled){border-color:var(--cyan);filter:brightness(1.12);transform:translateY(-1px)}
 button:disabled{opacity:.4;cursor:not-allowed;transform:none}
-input{width:100%;padding:12px 13px;background:#080f25;border:1px solid #455681;border-radius:10px;color:var(--cream);outline:none}
+input{width:100%;padding:12px 13px;background:#1d080d;border:1px solid #455681;border-radius:10px;color:var(--cream);outline:none}
 input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #5df4ff18}
 .wrap{max-width:1100px;margin:auto;padding:18px 18px 45px}
-.top{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid #34446f;border-radius:15px;padding:12px 15px;background:#090d20eF;backdrop-filter:blur(16px);box-shadow:0 10px 35px #0003}
+.top{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid #34446f;border-radius:15px;padding:12px 15px;background:#160609eF;backdrop-filter:blur(16px);box-shadow:0 10px 35px #0003}
 .brand{font-size:12px;font-weight:900;letter-spacing:.14em;color:var(--cyan)}
-.status{font-size:10px;color:var(--muted);border:1px solid #455681;background:#111a35;padding:6px 10px;border-radius:999px;white-space:nowrap}
+.status{font-size:10px;color:var(--muted);border:1px solid #455681;background:#2a0d14;padding:6px 10px;border-radius:999px;white-space:nowrap}
 .hero{padding:30px 3px 16px}
 .eyebrow{font-size:10px;font-weight:850;letter-spacing:.2em;color:var(--green)}
 h1{font-size:clamp(36px,7vw,66px);line-height:1.02;letter-spacing:-.065em;margin:10px 0 12px;font-weight:1000}
 h1 span{color:var(--cyan);text-shadow:0 0 26px #5df4ff2a}
 .sub{max-width:680px;color:var(--muted);margin:0}
-.panel{background:linear-gradient(145deg,#111a35f2,#0d1530f5);border:1px solid #34446f;border-radius:18px;padding:20px;margin-top:15px;box-shadow:0 18px 60px #0004;overflow:hidden}
+.panel{background:linear-gradient(145deg,#35101aF2,#210910F5);border:1px solid #34446f;border-radius:18px;padding:20px;margin-top:15px;box-shadow:0 18px 60px #0004;overflow:hidden}
 .setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
 .field label{display:block;font-size:10px;color:var(--muted);margin-bottom:7px;letter-spacing:.1em;font-weight:800}
 .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
@@ -42,7 +42,7 @@ h1 span{color:var(--cyan);text-shadow:0 0 26px #5df4ff2a}
 .round{font-size:10px;letter-spacing:.15em;color:var(--green);font-weight:900}
 h2{margin:5px 0 0;font-size:clamp(20px,4vw,26px);letter-spacing:-.03em}
 .players{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:20px 0}
-.player{border:1px solid #34446f;border-radius:14px;padding:17px;min-height:145px;background:linear-gradient(145deg,#172344,#0d1530)}
+.player{border:1px solid #34446f;border-radius:14px;padding:17px;min-height:145px;background:linear-gradient(145deg,#4a1523,#260b12)}
 .player.active{border-color:var(--green);box-shadow:inset 0 0 0 1px #c7ff6520,0 0 24px #c7ff6510}
 .player.out{opacity:.45}
 .player-top{display:flex;justify-content:space-between;gap:8px;align-items:start}
@@ -55,7 +55,7 @@ h2{margin:5px 0 0;font-size:clamp(20px,4vw,26px);letter-spacing:-.03em}
 .pulse-zone{display:grid;grid-template-columns:1fr auto 1fr;gap:15px;align-items:center;padding:21px 0;border-top:1px solid #34446f;border-bottom:1px solid #34446f}
 .label{font-size:10px;color:var(--muted);letter-spacing:.08em;font-weight:800}
 .pulses{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
-.pulse{width:16px;height:27px;border-radius:10px 10px 5px 5px;border:1px solid #52648d;background:linear-gradient(180deg,#52648d,#172344);position:relative}
+.pulse{width:16px;height:27px;border-radius:10px 10px 5px 5px;border:1px solid #52648d;background:linear-gradient(180deg,#a13a50,#4a1422);position:relative}
 .pulse:before{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:var(--cyan);top:5px;left:5px;box-shadow:0 0 7px #5df4ff80}
 .chamber{text-align:center;border:1px solid #455681;background:#111a35;border-radius:14px;padding:13px 17px;min-width:110px}
 .chamber strong{display:block;font-size:27px;color:var(--cyan)}
@@ -67,18 +67,44 @@ h2{margin:5px 0 0;font-size:clamp(20px,4vw,26px);letter-spacing:-.03em}
 .log p:first-child{color:var(--cream)}
 .log-title{font-size:10px;letter-spacing:.15em;color:var(--cyan);margin-bottom:10px;font-weight:900}
 .hidden{display:none!important}
-.notice{padding:11px 13px;border:1px solid #7d9f4b;border-radius:12px;background:#c7ff650b;color:var(--green);font-size:11px;margin-top:12px}
+.notice{padding:11px 13px;border:1px solid #a92a43;border-radius:12px;background:#ff31570b;color:var(--green);font-size:11px;margin-top:12px}
 .error{color:#ff9db4;border-color:#8c4663;background:#ff5c830d}
 .rules{font-size:11px;color:var(--muted);margin-top:22px;background:#111a3580;border:1px solid #29395f;border-radius:14px;padding:13px 15px}
 .rules summary{cursor:pointer;color:var(--cream);font-weight:800}
 footer{padding-top:22px;color:#8999c3;font-size:9px;letter-spacing:.12em}
 @media(max-width:620px){.setup-grid,.players{grid-template-columns:1fr}.pulse-zone{grid-template-columns:1fr;text-align:center}.pulses{justify-content:center}.odds{text-align:center}.wrap{padding:10px 10px 28px}.top{padding:10px 12px}.brand{font-size:10px;letter-spacing:.08em}.hero{padding-top:24px}.panel{padding:15px}.player{min-height:120px}.actions button{flex:1 1 auto}.roomcode{letter-spacing:.14em}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+
+/* Stylized, non-functional 3D dealer and abstract game prop */
+.dealer-scene{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,.7fr);align-items:center;gap:20px;min-height:260px;margin-top:16px;padding:22px 26px;border:1px solid #8d293d;border-radius:20px;overflow:hidden;background:radial-gradient(ellipse at 70% 50%,#68172a 0,transparent 50%),linear-gradient(135deg,#310b14,#18070b 70%);box-shadow:inset 0 1px #ff9ca81c,0 24px 70px #0006;perspective:900px}
+.dealer-copy{position:relative;z-index:2}.dealer-copy .eyebrow{color:#ff5368}.dealer-copy h2{font-size:clamp(24px,4vw,38px);margin:7px 0}.dealer-copy p{max-width:400px;color:var(--muted);font-size:12px}
+.dealer-model{position:relative;height:210px;transform-style:preserve-3d;transform:rotateY(-12deg) rotateX(3deg);filter:drop-shadow(0 20px 18px #0008);animation:dealerFloat 5s ease-in-out infinite}
+.dealer-head{position:absolute;z-index:3;left:calc(50% - 34px);top:13px;width:68px;height:75px;border-radius:24px 24px 29px 29px;background:linear-gradient(120deg,#f4c6bd 0,#a65b63 48%,#54202b 100%);box-shadow:inset -9px -2px 0 #260b12, inset 5px 3px 0 #ffe2d4;transform:translateZ(24px)}
+.dealer-hat{position:absolute;z-index:4;left:calc(50% - 48px);top:0;width:96px;height:25px;border-radius:50% 50% 8px 8px;background:linear-gradient(90deg,#09070a,#47101d 50%,#12070b);box-shadow:0 7px 0 #8c243a;transform:translateZ(29px)}
+.dealer-face{position:absolute;top:44px;left:14px;width:40px;height:8px;border-top:3px solid #260b12;border-bottom:2px solid #260b12;border-radius:50%;opacity:.9}
+.dealer-body{position:absolute;left:calc(50% - 65px);top:79px;width:130px;height:112px;border-radius:35px 35px 12px 12px;background:linear-gradient(100deg,#12070b 0,#571222 38%,#a82a43 54%,#2a0a12 100%);box-shadow:inset 8px 0 #ff6c7c25,inset -13px 0 #080508;transform:translateZ(12px);clip-path:polygon(19% 0,81% 0,100% 100%,0 100%)}
+.dealer-lapel{position:absolute;top:3px;left:47px;width:36px;height:75px;background:linear-gradient(100deg,#fff0e8,#9b3447 55%,#210810);clip-path:polygon(0 0,100% 0,65% 45%,50% 100%,35% 45%);opacity:.9}
+.dealer-badge{position:absolute;z-index:5;left:calc(50% + 24px);top:111px;width:19px;height:19px;border-radius:50%;border:2px solid #ffb4bc;background:radial-gradient(circle at 35% 30%,#fff,#ff5368 35%,#6d1024 70%);box-shadow:0 0 18px #ff315755;transform:translateZ(28px)}
+.energy-relic{position:absolute;z-index:6;right:3%;top:65px;width:62px;height:92px;border:2px solid #ff7b8d;border-radius:18px 18px 23px 23px;background:linear-gradient(145deg,#ff9ca8,#ad1c39 35%,#360b17 72%);box-shadow:inset 6px 4px 0 #fff3, inset -8px -5px 0 #1a060b,0 0 25px #ff315744;transform:rotateY(-24deg) rotateZ(12deg) translateZ(45px)}
+.energy-relic:before{content:"";position:absolute;left:11px;top:14px;width:35px;height:35px;border-radius:50%;background:radial-gradient(circle,#fff4f4 0 8%,#ff9ca8 18%,#ff3157 45%,#510d1b 70%);box-shadow:0 0 15px #ff3157}
+.energy-relic:after{content:"";position:absolute;left:18px;bottom:11px;width:22px;height:12px;border-radius:4px;background:#2a0d14;box-shadow:inset 0 0 0 2px #ff9ca8}
+.scene-grid{position:absolute;inset:0;opacity:.18;background-image:linear-gradient(#ff53681c 1px,transparent 1px),linear-gradient(90deg,#ff53681c 1px,transparent 1px);background-size:28px 28px;transform:perspective(500px) rotateX(58deg) scale(1.8);transform-origin:bottom}
+@keyframes dealerFloat{0%,100%{translate:0 0}50%{translate:0 -7px}}
+@media(max-width:620px){.dealer-scene{grid-template-columns:1fr;gap:0;padding:20px}.dealer-model{height:190px;max-width:300px;width:100%;margin:0 auto}.energy-relic{right:8%}}
+@media(prefers-reduced-motion:reduce){.dealer-model{animation:none}}
 </style>
 </head>
 <body><main class="wrap">
 <header class="top"><div class="brand">◈ QUANTUM / GAME LAB</div><div class="status" id="connection">CONNECTING…</div></header>
 <section class="hero"><div class="eyebrow">ONLINE TWO-PLAYER PROBABILITY DUEL</div><h1>QUANTUM <span>ROULETTE</span></h1><p class="sub">Read the odds. Choose your target. Keep your energy online. Create a room, share the code, and play from separate devices.</p></section>
+<section class="dealer-scene" aria-label="Stylized three-dimensional dealer character">
+<div class="scene-grid" aria-hidden="true"></div>
+<div class="dealer-copy"><div class="eyebrow">THE HOUSE IS WATCHING</div><h2>MEET THE DEALER</h2><p>A cinematic, dimensional host and glowing quantum relic set the mood for the match. The prop is fictional and decorative.</p></div>
+<div class="dealer-model" role="img" aria-label="Stylized three-dimensional dealer in a dark red suit beside a glowing abstract game relic">
+<div class="dealer-hat"></div><div class="dealer-head"><div class="dealer-face"></div></div>
+<div class="dealer-body"><div class="dealer-lapel"></div></div><div class="dealer-badge"></div><div class="energy-relic"></div>
+</div>
+</section>
 <section id="setup" class="panel">
 <div class="setup-grid"><div class="field"><label for="name">YOUR PLAYER NAME</label><input id="name" maxlength="18" value="Player One" autocomplete="nickname"></div><div class="field"><label for="join-code">ROOM CODE · JOIN EXISTING</label><input id="join-code" maxlength="5" placeholder="ABCDE" autocomplete="off" autocapitalize="characters"></div></div>
 <div class="actions"><button class="primary" id="create">CREATE ROOM ↗</button><button id="join">JOIN ROOM</button></div><p class="hint">No account required. Both players must open this same hosted website. Room codes are temporary.</p><div id="notice" class="notice hidden" role="status"></div>
