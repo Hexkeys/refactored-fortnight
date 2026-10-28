@@ -137,7 +137,7 @@ footer{padding-top:22px;color:#8999c3;font-size:9px;letter-spacing:.12em}
 </section>
 <section id="setup" class="panel">
 <div class="setup-grid"><div class="field"><label for="name">YOUR PLAYER NAME</label><input id="name" maxlength="18" value="Player One" autocomplete="nickname"></div><div class="field"><label for="join-code">ROOM CODE · JOIN EXISTING</label><input id="join-code" maxlength="5" placeholder="ABCDE" autocomplete="off" autocapitalize="characters"></div></div>
-<div class="actions"><button class="primary" id="create">CREATE ROOM ↗</button><button id="join">JOIN ROOM</button></div><p class="hint">No account required. Invite up to 9 other players using the room code. Rooms support up to 10 players.</p><div id="notice" class="notice hidden" role="status"></div>
+<div class="actions"><button class="primary" id="create">CREATE ROOM ↗</button><button id="join">JOIN ROOM</button><button id="solo">PLAY SOLO ◈</button></div><p class="hint">No account required. Invite up to 9 other players using the room code. Rooms support up to 10 players.</p><div id="notice" class="notice hidden" role="status"></div>
 </section>
 <section id="game" class="panel hidden" aria-live="polite">
 <div class="arena-head"><div><div class="round" id="round">ROUND 01</div><h2 id="turn-title">Waiting for opponent…</h2></div><button id="leave">LEAVE ROOM ×</button></div>
@@ -154,7 +154,7 @@ footer{padding-top:22px;color:#8999c3;font-size:9px;letter-spacing:.12em}
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
 const socket=io();
-let room=null, busy=false;
+let room=null, busy=false, soloMode=false, soloPulses=[];
 function notice(message,error=false,target='notice'){const el=$(target);el.textContent=message;el.classList.remove('hidden','error');if(error)el.classList.add('error');}
 function clearNotice(target='notice'){$(target).classList.add('hidden');}
 function ask(event,payload){return new Promise(resolve=>socket.emit(event,payload,resolve));}
@@ -175,7 +175,7 @@ function render(r){
  $('players').innerHTML=seats.join('');
  $('remaining').textContent=r.status==='waiting'?'—':r.remaining;$('odds').textContent=r.status==='waiting'||!r.remaining?'—':Math.round(r.chargedRemaining/r.remaining*100)+'%';$('pulses').replaceChildren(...Array.from({length:r.remaining},()=>{const el=document.createElement('span');el.className='pulse';el.title='Unknown pulse';return el;}));log(r.log);
  const active=r.status==='playing'&&r.viewerIndex===r.turn&&!busy;
- $('self').disabled=!active;$('opponent').disabled=true;$('reload').disabled=r.status!=='playing'||r.remaining!==0||busy;
+ $('self').disabled=!active;$('opponent').disabled=true;$('reload').disabled=r.status!=='playing'||r.remaining!==0||busy;$('self').textContent=soloMode?'TARGET YOURSELF ↘':'TEST YOUR LUCK ↘';$('leave').textContent=soloMode?'EXIT SOLO ×':'LEAVE ROOM ×';
  $('turn-title').textContent=r.status==='waiting'?'Waiting for more players…':r.status==='over'?(r.winner?r.winner+' wins!':'Match complete'):r.viewerIndex===r.turn?'Your turn':r.players[r.turn].name+"'s turn";
  $('hint').textContent=r.status==='waiting'?'Share the room code. The match becomes active when a second player joins.':r.status==='over'?'Match complete. Leave the room to start another.':r.remaining===0?'Sequence empty — any player can reload.':r.viewerIndex===r.turn?'Choose yourself or tap an active player at the table.':'Waiting for the next player to act.';
 }
@@ -183,16 +183,29 @@ $('players').addEventListener('click',e=>{const button=e.target.closest('[data-t
 
 socket.on('connect',()=>{$('connection').textContent='● SERVER ONLINE';$('connection').style.color='var(--green)';});
 socket.on('disconnect',()=>{$('connection').textContent='○ RECONNECTING';$('connection').style.color='var(--red)';notice('Connection lost. Reconnecting to server…',true);});
-socket.on('room:update',render);
-socket.on('room:closed',data=>{room=null;busy=false;$('game').classList.add('hidden');$('setup').classList.remove('hidden');notice(data?.message||'Room closed.',true);});
+socket.on('room:update',r=>{if(!soloMode)render(r);});
+socket.on('room:closed',data=>{if(soloMode)return;room=null;busy=false;$('game').classList.add('hidden');$('setup').classList.remove('hidden');notice(data?.message||'Room closed.',true);});
+
+function makeSoloSequence(){const a=Array.from({length:7},(_,i)=>i<3?'charged':'empty');return a.sort(()=>Math.random()-.5);}
+function soloLog(m){room.log.unshift(m);room.log=room.log.slice(0,30);}
+function soloAlive(){return room.players.filter(p=>p.hp>0);}
+function soloFinish(){const a=soloAlive();if(a.length<=1){room.status='over';room.winner=a[0]?.name||'Nobody';soloLog(room.winner+' wins the arena!');return true;}return false;}
+function soloNext(from){for(let n=1;n<=room.players.length;n++){const i=(from+n)%room.players.length;if(room.players[i].hp>0){room.turn=i;return;}}}
+function soloRender(){room.remaining=soloPulses.length;room.chargedRemaining=soloPulses.filter(p=>p==='charged').length;render(room);}
+function startSolo(){soloMode=true;busy=false;soloPulses=makeSoloSequence();room={code:'SOLO',status:'playing',players:[{name:name(),hp:3,connected:true},...['Crimson Bot','Violet Bot','Nova Bot','Echo Bot','Rook Bot','Pixel Bot','Onyx Bot','Flare Bot','Cipher Bot'].map(n=>({name:n,hp:3,connected:true}))],viewerIndex:0,turn:0,round:1,remaining:7,chargedRemaining:3,log:['Solo arena initialized. Nine AI rivals are online.'],winner:null};clearNotice();clearNotice('game-notice');soloLog('Your turn. Select a rival at the table.');soloRender();}
+function soloAction(target){if(!room||busy||!soloMode||room.status!=='playing'||room.turn!==0||!soloPulses.length)return;const ti=target==='self'?0:Number(target);if(!Number.isInteger(ti)||ti<0||ti>=room.players.length||room.players[ti].hp<=0)return;busy=true;const pulse=soloPulses.shift();if(pulse==='charged'){room.players[ti].hp=Math.max(0,room.players[ti].hp-1);soloLog((ti===0?'You':room.players[ti].name)+' lost one energy to a charged pulse.');}else soloLog('Empty pulse — no energy lost.');if(!soloFinish()){if(pulse==='empty'&&ti===0){room.turn=0;soloLog('Empty self-target keeps your turn.');}else soloNext(0);}soloRender();if(room.status==='over'){busy=false;return;}if(room.turn!==0)setTimeout(soloBotTurn,650);else busy=false;}
+function soloBotTurn(){if(!room||!soloMode||room.status!=='playing')return;if(!soloPulses.length){soloReload();return;}const actor=room.turn;const alive=room.players.map((p,i)=>({p,i})).filter(x=>x.p.hp>0);let target=0;if(room.players[0].hp<=0||Math.random()<.2){const choices=alive.filter(x=>x.i!==actor);if(choices.length)target=choices[Math.floor(Math.random()*choices.length)].i;}const pulse=soloPulses.shift();if(pulse==='charged'){room.players[target].hp=Math.max(0,room.players[target].hp-1);soloLog(room.players[actor].name+' triggered a charged pulse at '+room.players[target].name+'.');}else soloLog(room.players[actor].name+' triggered an empty pulse.');if(!soloFinish()){if(pulse==='empty'&&target===actor)soloLog(room.players[actor].name+' keeps the turn.');else soloNext(actor);}soloRender();if(room.status==='over'){busy=false;return;}if(!soloPulses.length){busy=false;soloLog('Sequence empty. Reload to continue.');soloRender();return;}if(room.turn!==0)setTimeout(soloBotTurn,550);else busy=false;}
+function soloReload(){if(!room||!soloMode||room.status!=='playing'||soloPulses.length)return;soloPulses=makeSoloSequence();room.round++;soloLog('Round '+room.round+' started. A new sequence is ready.');if(room.players[room.turn].hp<=0)soloNext(room.turn);soloRender();if(room.turn!==0){busy=true;setTimeout(soloBotTurn,550);}else busy=false;}
+$('solo').addEventListener('click',startSolo);
+
 $('create').addEventListener('click',async()=>{clearNotice();if(!socket.connected)return notice('Server is offline. Check that the game is deployed and try again.',true);const result=await ask('room:create',{name:name()});if(!result?.ok)return notice(result?.error||'Could not create room.',true);$('join-code').value='';});
 $('join').addEventListener('click',async()=>{clearNotice();const code=$('join-code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==5)return notice('Enter the five-character room code.',true);const result=await ask('room:join',{code,name:name()});if(!result?.ok)return notice(result?.error||'Could not join room.',true);clearNotice();});
 $('join-code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);});
-async function act(target){if(!room||busy)return;busy=true;render(room);const result=await ask('game:act',{target});busy=false;if(!result?.ok)notice(result?.error||'Action failed.',true,'game-notice');else clearNotice('game-notice');if(room)render(room);}
+async function act(target){if(!room||busy)return;if(soloMode){soloAction(target);return;}busy=true;render(room);const result=await ask('game:act',{target});busy=false;if(!result?.ok)notice(result?.error||'Action failed.',true,'game-notice');else clearNotice('game-notice');if(room)render(room);}
 $('self').addEventListener('click',()=>act('self'));
-$('reload').addEventListener('click',async()=>{if(!room||busy)return;busy=true;render(room);const result=await ask('game:reload',{});busy=false;if(!result?.ok)notice(result?.error||'Reload failed.',true,'game-notice');if(room)render(room);});
+$('reload').addEventListener('click',async()=>{if(!room||busy)return;if(soloMode){soloReload();return;}busy=true;render(room);const result=await ask('game:reload',{});busy=false;if(!result?.ok)notice(result?.error||'Reload failed.',true,'game-notice');if(room)render(room);});
 $('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('room-code').textContent);notice('Room code copied. Send it to your opponent.',false,'game-notice');}catch{notice('Copy unavailable here — select the room code and copy it manually.',true,'game-notice');}});
-$('leave').addEventListener('click',()=>{socket.emit('room:leave');room=null;busy=false;$('game').classList.add('hidden');$('setup').classList.remove('hidden');notice('You left the room. Create a new room to play again.');});
+$('leave').addEventListener('click',()=>{if(!soloMode)socket.emit('room:leave');soloMode=false;soloPulses=[];room=null;busy=false;$('game').classList.add('hidden');$('setup').classList.remove('hidden');notice('You left the room. Create a new room to play again.');});
 $('name').addEventListener('keydown',e=>{if(e.key==='Enter')$('create').click();});
 })();
 </script></body></html>
