@@ -30,6 +30,7 @@ function publicRoom(room, viewerId) {
   return {
     code: room.code,
     status: room.players.length < 2 ? "waiting" : room.over ? "over" : "playing",
+    maxPlayers: 10,
     players: room.players.map(p => ({ name: p.name, hp: p.hp, connected: p.connected })),
     viewerIndex: room.players.findIndex(p => p.id === viewerId),
     turn: room.turn,
@@ -68,7 +69,7 @@ io.on("connection", socket => {
     rooms.set(code, room);
     socket.data.roomCode = code;
     socket.join(code);
-    addLog(room, "Room created. Waiting for a second player.");
+    addLog(room, "Room created. Invite up to nine more players.");
     reply({ ok: true, code });
     sendRoom(room);
   });
@@ -77,16 +78,17 @@ io.on("connection", socket => {
     const normalized = String(code || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5);
     const room = rooms.get(normalized);
     if (!room) return reply({ ok: false, error: "Room not found. Check the code and try again." });
-    if (room.players.length >= 2) return reply({ ok: false, error: "That room is already full." });
+    if (room.players.length >= 10) return reply({ ok: false, error: "That room is full (10 players maximum)." });
     if (room.players.some(p => p.id === socket.id)) return reply({ ok: false, error: "You are already in this room." });
-    room.players.push({ id: socket.id, name: safeName(name, "Player Two"), hp: 3, connected: true });
+    room.players.push({ id: socket.id, name: safeName(name, `Player ${room.players.length + 1}`), hp: 3, connected: true });
     socket.data.roomCode = normalized;
     socket.join(normalized);
     room.turn = 0;
     room.over = false;
+    room.winner = null;
     room.round = 1;
-    startRound(room);
-    addLog(room, `${room.players[1].name} joined. Match online.`);
+    if (room.players.length === 2) startRound(room);
+    addLog(room, `${room.players[room.players.length - 1].name} joined (${room.players.length}/10 players).`);
     reply({ ok: true, code: normalized });
     sendRoom(room);
   });
@@ -96,11 +98,11 @@ io.on("connection", socket => {
     const room = code && rooms.get(code);
     if (!room) return reply({ ok: false, error: "Room connection was lost. Create or join a room again." });
     const actor = room.players.findIndex(p => p.id === socket.id);
-    if (actor < 0 || room.players.length !== 2 || room.over) return reply({ ok: false, error: "The match is not active." });
+    if (actor < 0 || room.players.length < 2 || room.over) return reply({ ok: false, error: "The match is not active." });
     if (room.turn !== actor) return reply({ ok: false, error: "It is not your turn." });
-    if (!room.pulses.length) return reply({ ok: false, error: "The chamber is empty. Reload first." });
-    const targetIndex = target === "self" ? actor : target === "opponent" ? 1 - actor : -1;
-    if (targetIndex < 0) return reply({ ok: false, error: "Invalid target." });
+    if (!room.pulses.length) return reply({ ok: false, error: "The sequence is empty. Reload first." });
+    const targetIndex = target === "self" ? actor : Number.isInteger(target) ? target : target === "opponent" ? room.players.findIndex((p, i) => i !== actor && p.hp > 0) : -1;
+    if (targetIndex < 0 || targetIndex >= room.players.length || room.players[targetIndex].hp <= 0) return reply({ ok: false, error: "Choose an active player." });
 
     const pulse = room.pulses.shift();
     const shooter = room.players[actor];
@@ -112,23 +114,29 @@ io.on("connection", socket => {
       addLog(room, `${shooter.name} triggered an EMPTY pulse at ${targetIndex === actor ? "themself" : targetPlayer.name}.`);
     }
 
-    if (targetPlayer.hp <= 0) {
+    const alive = room.players.filter(p => p.hp > 0);
+    if (alive.length <= 1) {
       room.over = true;
-      room.winner = room.players[1 - targetIndex].name;
+      room.winner = alive[0]?.name || "Nobody";
       addLog(room, `${targetPlayer.name} is out of energy. ${room.winner} wins.`);
     } else if (pulse === "empty" && targetIndex === actor) {
       addLog(room, `${shooter.name} keeps the turn.`);
     } else {
-      room.turn = 1 - actor;
+      let next = actor;
+      for (let step = 0; step < room.players.length; step++) {
+        next = (next + 1) % room.players.length;
+        if (room.players[next].hp > 0) break;
+      }
+      room.turn = next;
     }
-    if (!room.over && room.pulses.length === 0) addLog(room, "Chamber empty. Either player can reload for the next round.");
+    if (!room.over && room.pulses.length === 0) addLog(room, "Sequence empty. Any player can reload for the next round.");
     reply({ ok: true });
     sendRoom(room);
   });
 
   socket.on("game:reload", (_payload, reply = () => {}) => {
     const room = socket.data.roomCode && rooms.get(socket.data.roomCode);
-    if (!room || room.players.length !== 2 || room.over) return reply({ ok: false, error: "No active match to reload." });
+    if (!room || room.players.length < 2 || room.over) return reply({ ok: false, error: "No active match to reload." });
     if (room.pulses.length) return reply({ ok: false, error: "Reload is only available when the chamber is empty." });
     room.round += 1;
     startRound(room);
