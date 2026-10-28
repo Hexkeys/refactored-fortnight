@@ -159,6 +159,20 @@ footer{padding-top:22px;color:#8999c3;font-size:9px;letter-spacing:.12em}
 @keyframes lightsSweep{0%{filter:brightness(.8)}100%{filter:brightness(1.35)}}
 @media(prefers-reduced-motion:reduce){.table-felt,.table-stage:before,.table-felt:after,.player,.avatar3d,.orb.on,.pulse,.energy-relic,.dealer-model,.table-lights{animation:none!important}}
 
+
+/* Keep motion subtle so the arena stays readable and input targets stay stable */
+.table-felt{animation:none}
+.table-stage:before{animation:arenaOrbit 28s linear infinite;opacity:.55}
+.table-felt:after{animation:corePulse 4.5s ease-in-out infinite}
+.player{animation:none;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.player.active{animation:activeSeat 2.8s ease-in-out infinite}
+.avatar3d{animation:none}
+.orb.on{animation:none}
+.pulse{animation:none}
+.dealer-model{animation:dealerFloat 6s ease-in-out infinite}
+.energy-relic{animation:relicGlow 3.5s ease-in-out infinite alternate}
+@media(prefers-reduced-motion:reduce){.table-stage:before,.table-felt:after,.player.active,.dealer-model,.energy-relic{animation:none!important}}
+
 </style>
 </head>
 <body><main class="wrap">
@@ -190,7 +204,8 @@ footer{padding-top:22px;color:#8999c3;font-size:9px;letter-spacing:.12em}
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
-const socket=io();
+const playerToken=(()=>{let token=sessionStorage.getItem("quantum-player-token");if(!token){token=(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)+Date.now().toString(36));sessionStorage.setItem("quantum-player-token",token);}return token;})();
+const socket=io({auth:{playerToken}});
 let room=null, busy=false, soloMode=false, soloPulses=[];
 function notice(message,error=false,target='notice'){const el=$(target);el.textContent=message;el.classList.remove('hidden','error');if(error)el.classList.add('error');}
 function clearNotice(target='notice'){$(target).classList.add('hidden');}
@@ -235,7 +250,7 @@ function soloBotTurn(){if(!room||!soloMode||room.status!=='playing')return;if(!s
 function soloReload(){if(!room||!soloMode||room.status!=='playing'||soloPulses.length)return;soloPulses=makeSoloSequence();room.round++;soloLog('Round '+room.round+' started. A new sequence is ready.');if(room.players[room.turn].hp<=0)soloNext(room.turn);soloRender();if(room.turn!==0){busy=true;setTimeout(soloBotTurn,550);}else busy=false;}
 $('solo').addEventListener('click',startSolo);
 
-$('create').addEventListener('click',async()=>{clearNotice();if(!socket.connected)return notice('Server is offline. Check that the game is deployed and try again.',true);const result=await ask('room:create',{name:name()});if(!result?.ok)return notice(result?.error||'Could not create room.',true);$('join-code').value='';});
+$('create').addEventListener('click',async()=>{clearNotice();if(!socket.connected)return notice('Server is offline. Check that the game is deployed and try again.',true);const result=await ask('room:create',{name:name()});if(!result?.ok)return notice(result?.error||'Could not create room.',true);$('join-code').value='';clearNotice();});
 $('join').addEventListener('click',async()=>{clearNotice();const code=$('join-code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==5)return notice('Enter the five-character room code.',true);const result=await ask('room:join',{code,name:name()});if(!result?.ok)return notice(result?.error||'Could not join room.',true);clearNotice();});
 $('join-code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);});
 async function act(target){if(!room||busy)return;if(soloMode){soloAction(target);return;}busy=true;render(room);const result=await ask('game:act',{target});busy=false;if(!result?.ok)notice(result?.error||'Action failed.',true,'game-notice');else clearNotice('game-notice');if(room)render(room);}
