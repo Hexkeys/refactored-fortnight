@@ -60,10 +60,17 @@ function safeName(name, fallback) {
 }
 
 io.on("connection", socket => {
+  const playerToken = String(socket.handshake.auth && socket.handshake.auth.playerToken || "");
+  if (playerToken) {
+    for (const room of rooms.values()) {
+      const returning = room.players.find(p => p.token === playerToken);
+      if (returning) { returning.id = socket.id; returning.connected = true; socket.data.roomCode = room.code; socket.join(room.code); addLog(room, returning.name + " reconnected."); sendRoom(room); break; }
+    }
+  }
   socket.on("room:create", ({ name } = {}, reply = () => {}) => {
     const code = makeCode();
     const room = {
-      code, players: [{ id: socket.id, name: safeName(name, "Player One"), hp: 3, connected: true }],
+      code, players: [{ id: socket.id, token: playerToken, name: safeName(name, "Player One"), hp: 3, connected: true }],
       turn: 0, round: 1, pulses: [], log: [], over: false, winner: null
     };
     rooms.set(code, room);
@@ -78,9 +85,10 @@ io.on("connection", socket => {
     const normalized = String(code || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5);
     const room = rooms.get(normalized);
     if (!room) return reply({ ok: false, error: "Room not found. Check the code and try again." });
+    if (room.over) return reply({ ok: false, error: "That match has ended. Create a new room for another game." });
     if (room.players.length >= 10) return reply({ ok: false, error: "That room is full (10 players maximum)." });
     if (room.players.some(p => p.id === socket.id)) return reply({ ok: false, error: "You are already in this room." });
-    room.players.push({ id: socket.id, name: safeName(name, `Player ${room.players.length + 1}`), hp: 3, connected: true });
+    room.players.push({ id: socket.id, token: playerToken, name: safeName(name, `Player ${room.players.length + 1}`), hp: 3, connected: true });
     socket.data.roomCode = normalized;
     socket.join(normalized);
     if (room.players.length === 2) {
@@ -151,9 +159,16 @@ io.on("connection", socket => {
     const code = socket.data.roomCode;
     const room = code && rooms.get(code);
     if (room) {
-      addLog(room, `${room.players.find(p => p.id === socket.id)?.name || "A player"} left the room.`);
-      io.to(code).emit("room:closed", { message: "A player left. Create a new room to play again." });
-      rooms.delete(code);
+      const index = room.players.findIndex(p => p.id === socket.id);
+      const leaving = index >= 0 ? room.players[index] : null;
+      if (index >= 0) room.players.splice(index, 1);
+      addLog(room, (leaving ? leaving.name : "A player") + " left the room.");
+      if (!room.players.length) rooms.delete(code);
+      else {
+        if (room.turn >= room.players.length) room.turn = 0;
+        if (room.players.length < 2) { room.pulses = []; room.over = false; room.winner = null; room.turn = 0; }
+        sendRoom(room);
+      }
     }
     socket.leave(code);
     delete socket.data.roomCode;
@@ -163,9 +178,18 @@ io.on("connection", socket => {
     const code = socket.data.roomCode;
     const room = code && rooms.get(code);
     if (!room) return;
-    addLog(room, `${room.players.find(p => p.id === socket.id)?.name || "A player"} disconnected.`);
-    io.to(code).emit("room:closed", { message: "A player disconnected. Create a new room to play again." });
-    rooms.delete(code);
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player) return;
+    player.id = null;
+    player.connected = false;
+    addLog(room, player.name + " disconnected. They can reconnect to reclaim their seat.");
+    if (room.turn === room.players.indexOf(player)) {
+      for (let step = 1; step <= room.players.length; step++) {
+        const next = (room.turn + step) % room.players.length;
+        if (room.players[next].hp > 0 && room.players[next].connected) { room.turn = next; break; }
+      }
+    }
+    sendRoom(room);
   });
 });
 
