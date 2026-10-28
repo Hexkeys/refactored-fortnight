@@ -135,7 +135,7 @@ io.on("connection", socket => {
       let next = actor;
       for (let step = 0; step < room.players.length; step++) {
         next = (next + 1) % room.players.length;
-        if (room.players[next].hp > 0) break;
+        if (room.players[next].hp > 0 && room.players[next].connected) break;
       }
       room.turn = next;
     }
