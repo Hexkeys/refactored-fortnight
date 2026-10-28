@@ -92,11 +92,41 @@ footer{padding-top:22px;color:#8999c3;font-size:9px;letter-spacing:.12em}
 @keyframes dealerFloat{0%,100%{translate:0 0}50%{translate:0 -7px}}
 @media(max-width:620px){.dealer-scene{grid-template-columns:1fr;gap:0;padding:20px}.dealer-model{height:190px;max-width:300px;width:100%;margin:0 auto}.energy-relic{right:8%}}
 @media(prefers-reduced-motion:reduce){.dealer-model{animation:none}}
+
+/* Ten-seat table and stylized dimensional player projections */
+.table-stage{position:relative;margin:20px 0 14px;padding:16px 10px 12px;border:1px solid #742538;border-radius:24px;background:radial-gradient(ellipse at 50% 35%,#57101f,#21070d 72%);overflow:hidden;perspective:1000px}
+.table-lights{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 20% 0,#ff536826,transparent 28%),radial-gradient(circle at 85% 80%,#ff315722,transparent 30%)}
+.table-felt{position:relative;margin:10px auto 0;max-width:900px;padding:18px 14px 22px;border:3px solid #8e2c42;border-radius:32px;background:linear-gradient(145deg,#4a111f,#260a12 55%,#3c0c19);box-shadow:inset 0 0 0 5px #160609,inset 0 0 35px #ff31571c,0 18px 30px #0008;transform:rotateX(2deg)}
+.table-mark{text-align:center;font-size:10px;letter-spacing:.22em;font-weight:950;color:#ff9ca8;margin-bottom:15px}
+.table-mark span{color:#d9aeb7;font-weight:700;letter-spacing:.1em}
+.table-players{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.player{position:relative;min-width:0;min-height:150px;padding:10px 8px 12px;text-align:center;border:1px solid #713043;border-radius:14px;background:linear-gradient(145deg,#4a1422,#1c080e);box-shadow:inset 0 1px #ff9ca81c,0 8px 13px #0005;transform:translateZ(12px);transition:transform .2s,border-color .2s,box-shadow .2s}
+.player.active{border-color:#ff5368;box-shadow:inset 0 0 0 1px #ff53682a,0 0 22px #ff31572b;transform:translateY(-3px) translateZ(18px)}
+.player.out{opacity:.42;filter:grayscale(.65)}
+.player-top{display:flex;flex-direction:column;align-items:center;gap:5px;min-height:44px}
+.player-name{font-size:12px;font-weight:850;overflow-wrap:anywhere;max-width:100%}
+.tag{font-size:8px;color:#ffd5db;border:1px solid #773044;background:#2a0d14;padding:3px 6px;border-radius:999px;white-space:nowrap}
+.avatar3d{position:relative;width:56px;height:61px;margin:4px auto 7px;filter:drop-shadow(0 7px 5px #0008);transform-style:preserve-3d;transform:rotateY(-12deg)}
+.avatar3d .head{position:absolute;z-index:2;left:18px;top:2px;width:23px;height:25px;border-radius:9px 9px 11px 11px;background:linear-gradient(115deg,#ffe0cf,#b96a70 60%,#4a1522);box-shadow:inset -4px 0 #3a0b15;transform:translateZ(10px)}
+.avatar3d .hair{position:absolute;z-index:3;left:16px;top:0;width:26px;height:9px;border-radius:10px 10px 4px 4px;background:linear-gradient(90deg,#160609,#7b2739,#160609);transform:translateZ(13px)}
+.avatar3d .body{position:absolute;left:8px;top:23px;width:43px;height:35px;border-radius:13px 13px 5px 5px;background:linear-gradient(100deg,#18070b,#9e2941 45%,#360b16);clip-path:polygon(20% 0,80% 0,100% 100%,0 100%);box-shadow:inset -5px 0 #120508;transform:translateZ(5px)}
+.avatar3d .shine{position:absolute;left:26px;top:29px;width:3px;height:22px;background:#ffd4dc;opacity:.8;transform:rotate(12deg) translateZ(12px)}
+.seat-target{width:100%;margin-top:9px;padding:7px 4px;border-radius:8px;font-size:9px;letter-spacing:.03em;background:#591325;border-color:#a6334b}
+.seat-target:disabled{display:none}
+.player.empty-seat{min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-style:dashed;background:#21091070;box-shadow:none;transform:none}
+.empty-orb{width:30px;height:30px;border-radius:50%;border:1px dashed #8b4051;color:#b96577;display:grid;place-items:center;font-size:18px;margin-bottom:7px}
+.empty-label{font-size:9px;color:#9d6572;letter-spacing:.12em}
+.table-caption{text-align:center;color:#a86b78;font-size:8px;letter-spacing:.18em;margin-top:12px}
+.pulse-zone{border-color:#6b2433}
+.chamber{background:#2a0d14;border-color:#793044}
+.log{background:#1d080d;border-color:#542030}
+@media(max-width:720px){.table-players{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.player{min-height:143px}.table-felt{padding:14px 9px}.table-mark{letter-spacing:.1em}}
+@media(max-width:400px){.table-players{grid-template-columns:repeat(2,minmax(0,1fr))}.player{min-height:138px}}
 </style>
 </head>
 <body><main class="wrap">
 <header class="top"><div class="brand">◈ QUANTUM / GAME LAB</div><div class="status" id="connection">CONNECTING…</div></header>
-<section class="hero"><div class="eyebrow">ONLINE TWO-PLAYER PROBABILITY DUEL</div><h1>QUANTUM <span>ROULETTE</span></h1><p class="sub">Read the odds. Choose your target. Keep your energy online. Create a room, share the code, and play from separate devices.</p></section>
+<section class="hero"><div class="eyebrow">ONLINE TEN-PLAYER ARENA</div><h1>QUANTUM <span>ROULETTE</span></h1><p class="sub">Gather up to ten players around the crimson table. Share a room code and play from separate devices.</p></section>
 <section class="dealer-scene" aria-label="Stylized three-dimensional dealer character">
 <div class="scene-grid" aria-hidden="true"></div>
 <div class="dealer-copy"><div class="eyebrow">THE HOUSE IS WATCHING</div><h2>MEET THE DEALER</h2><p>A cinematic, dimensional host and glowing quantum relic set the mood for the match. The prop is fictional and decorative.</p></div>
@@ -107,14 +137,14 @@ footer{padding-top:22px;color:#8999c3;font-size:9px;letter-spacing:.12em}
 </section>
 <section id="setup" class="panel">
 <div class="setup-grid"><div class="field"><label for="name">YOUR PLAYER NAME</label><input id="name" maxlength="18" value="Player One" autocomplete="nickname"></div><div class="field"><label for="join-code">ROOM CODE · JOIN EXISTING</label><input id="join-code" maxlength="5" placeholder="ABCDE" autocomplete="off" autocapitalize="characters"></div></div>
-<div class="actions"><button class="primary" id="create">CREATE ROOM ↗</button><button id="join">JOIN ROOM</button></div><p class="hint">No account required. Both players must open this same hosted website. Room codes are temporary.</p><div id="notice" class="notice hidden" role="status"></div>
+<div class="actions"><button class="primary" id="create">CREATE ROOM ↗</button><button id="join">JOIN ROOM</button></div><p class="hint">No account required. Invite up to 9 other players using the room code. Rooms support up to 10 players.</p><div id="notice" class="notice hidden" role="status"></div>
 </section>
 <section id="game" class="panel hidden" aria-live="polite">
 <div class="arena-head"><div><div class="round" id="round">ROUND 01</div><h2 id="turn-title">Waiting for opponent…</h2></div><button id="leave">LEAVE ROOM ×</button></div>
 <div class="roomline" style="margin-top:14px"><span class="label">ROOM CODE</span><strong class="roomcode" id="room-code">-----</strong><button id="copy">COPY CODE</button></div>
-<div class="players"><article class="player" id="card0"><div class="player-top"><div class="player-name" id="name0">Player One</div><span class="tag" id="tag0">WAITING</span></div><div class="hp" id="hp0"></div><div class="player-meta" id="meta0">Waiting for opponent</div></article><article class="player" id="card1"><div class="player-top"><div class="player-name" id="name1">Player Two</div><span class="tag" id="tag1">WAITING</span></div><div class="hp" id="hp1"></div><div class="player-meta" id="meta1">Waiting for opponent</div></article></div>
+<div class="table-stage"><div class="table-lights" aria-hidden="true"></div><div class="table-felt"><div class="table-mark">QUANTUM ARENA <span>• UP TO 10 SEATS</span></div><div class="players table-players" id="players" aria-label="Players around the game table"></div></div><div class="table-caption">CRIMSON FELT · HOLOGRAPHIC PLAYER PROJECTIONS</div></div>
 <div class="pulse-zone"><div><div class="label">QUANTUM PULSE SEQUENCE · ORDER HIDDEN</div><div class="pulses" id="pulses"></div></div><div class="chamber"><strong id="remaining">—</strong><span>PULSES LEFT</span></div><div class="odds"><div class="label">CHARGED PULSE ODDS</div><strong id="odds">—</strong><div class="hint" style="margin-top:2px">Probability of energy loss</div></div></div>
-<div class="actions"><button class="primary" id="self" disabled>TEST YOUR LUCK ↘</button><button id="opponent" disabled>CHALLENGE OPPONENT ↗</button><button id="reload" disabled>RELOAD SEQUENCE ⟳</button></div><p class="hint" id="hint">Create a room and invite another player to begin.</p><div id="game-notice" class="notice hidden" role="status"></div>
+<div class="actions"><button class="primary" id="self" disabled>TEST YOUR LUCK ↘</button><button id="opponent" class="hidden" disabled>CHALLENGE OPPONENT ↗</button><button id="reload" disabled>RELOAD SEQUENCE ⟳</button></div><p class="hint" id="hint">Create a room and invite another player to begin.</p><div id="game-notice" class="notice hidden" role="status"></div>
 </section>
 <section class="panel"><div class="log-title">/// MATCH LOG</div><div id="log" class="log"><p>System ready. Connect to the online game server to begin.</p></div></section>
 <details class="rules"><summary>HOW TO PLAY</summary><p>Each player starts with 3 energy points. The server generates a hidden sequence of charged and empty quantum pulses. A charged pulse removes one energy point from the selected target. An empty pulse does nothing; choosing yourself for an empty pulse earns another turn. Reload when the sequence is empty. The last player with energy wins. The server controls the sequence and validates turns.</p></details>
@@ -130,15 +160,27 @@ function clearNotice(target='notice'){$(target).classList.add('hidden');}
 function ask(event,payload){return new Promise(resolve=>socket.emit(event,payload,resolve));}
 function name(){return $('name').value.trim().slice(0,18)||'Player';}
 function log(items){$('log').replaceChildren(...items.map((text,i)=>{const p=document.createElement('p');p.textContent=(i===0?'> ':'  ')+text;return p;}));}
+function escapeHTML(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function render(r){
  room=r;$('game').classList.remove('hidden');$('setup').classList.add('hidden');$('room-code').textContent=r.code;$('round').textContent='ROUND '+String(r.round).padStart(2,'0');
- r.players.forEach((p,i)=>{const exists=!!p;$('name'+i).textContent=exists?p.name:'Waiting for player…';$('hp'+i).replaceChildren(...Array.from({length:3},(_,n)=>{const el=document.createElement('span');el.className='orb'+(exists&&n<p.hp?' on':'');return el;}));$('meta'+i).textContent=!exists?'Open slot':!p.connected?'Disconnected':p.hp<=0?'ELIMINATED':p.hp+' / 3 energy';$('card'+i).classList.toggle('active',r.status==='playing'&&r.turn===i);$('card'+i).classList.toggle('out',exists&&p.hp<=0);$('tag'+i).textContent=!exists?'OPEN':!p.connected?'OFFLINE':r.status==='over'?'FINISHED':r.status==='waiting'?'WAITING':r.turn===i?'YOUR TURN':'READY';});
+ const seats=[];
+ for(let i=0;i<10;i++){
+  const p=r.players[i];
+  if(!p){seats.push('<article class="player empty-seat"><div class="empty-orb">+</div><div class="empty-label">OPEN SEAT '+String(i+1).padStart(2,'0')+'</div></article>');continue;}
+  const alive=p.hp>0, own=i===r.viewerIndex;
+  const tag=!p.connected?'OFFLINE':!alive?'OUT':r.status==='over'?'FINISHED':r.status==='waiting'?'WAITING':r.turn===i?'YOUR TURN':'READY';
+  const orbs=Array.from({length:3},(_,n)=>'<span class="orb'+(n<p.hp?' on':'')+'"></span>').join('');
+  seats.push('<article class="player'+(r.status==='playing'&&r.turn===i?' active':'')+(!alive?' out':'')+'"><div class="player-top"><div class="player-name">'+escapeHTML(p.name)+'</div><span class="tag">'+tag+'</span></div><div class="avatar3d" aria-hidden="true"><div class="hair"></div><div class="head"></div><div class="body"></div><div class="shine"></div></div><div class="hp" style="justify-content:center;margin:5px 0 7px">'+orbs+'</div><div class="player-meta">'+(alive?p.hp+' / 3 energy':'ELIMINATED')+'</div>'+(alive&&r.status==='playing'&&r.viewerIndex===r.turn?'<button class="seat-target" data-target="'+i+'" '+(r.turn===i?'disabled':'')+'>'+(own?'TARGET SELF':'TARGET PLAYER')+'</button>':'')+'</article>');
+ }
+ $('players').innerHTML=seats.join('');
  $('remaining').textContent=r.status==='waiting'?'—':r.remaining;$('odds').textContent=r.status==='waiting'||!r.remaining?'—':Math.round(r.chargedRemaining/r.remaining*100)+'%';$('pulses').replaceChildren(...Array.from({length:r.remaining},()=>{const el=document.createElement('span');el.className='pulse';el.title='Unknown pulse';return el;}));log(r.log);
  const active=r.status==='playing'&&r.viewerIndex===r.turn&&!busy;
- $('self').disabled=!active;$('opponent').disabled=!active;$('reload').disabled=r.status!=='playing'||r.remaining!==0||busy;
- $('turn-title').textContent=r.status==='waiting'?'Waiting for opponent…':r.status==='over'?(r.winner?r.winner+' wins!':'Match complete'):r.viewerIndex===r.turn?'Your turn':r.players[r.turn].name+"'s turn";
- $('hint').textContent=r.status==='waiting'?'Share the room code with one other player.':r.status==='over'?'Match complete. Leave the room to start another.':r.remaining===0?'Sequence empty — either player can reload.':r.viewerIndex===r.turn?'Choose yourself or your opponent.':'Waiting for the other player to act.';
+ $('self').disabled=!active;$('opponent').disabled=true;$('reload').disabled=r.status!=='playing'||r.remaining!==0||busy;
+ $('turn-title').textContent=r.status==='waiting'?'Waiting for more players…':r.status==='over'?(r.winner?r.winner+' wins!':'Match complete'):r.viewerIndex===r.turn?'Your turn':r.players[r.turn].name+"'s turn";
+ $('hint').textContent=r.status==='waiting'?'Share the room code. The match becomes active when a second player joins.':r.status==='over'?'Match complete. Leave the room to start another.':r.remaining===0?'Sequence empty — any player can reload.':r.viewerIndex===r.turn?'Choose yourself or tap an active player at the table.':'Waiting for the next player to act.';
 }
+$('players').addEventListener('click',e=>{const button=e.target.closest('[data-target]');if(!button||button.disabled)return;act(Number(button.dataset.target));});
+
 socket.on('connect',()=>{$('connection').textContent='● SERVER ONLINE';$('connection').style.color='var(--green)';});
 socket.on('disconnect',()=>{$('connection').textContent='○ RECONNECTING';$('connection').style.color='var(--red)';notice('Connection lost. Reconnecting to server…',true);});
 socket.on('room:update',render);
@@ -147,7 +189,7 @@ $('create').addEventListener('click',async()=>{clearNotice();if(!socket.connecte
 $('join').addEventListener('click',async()=>{clearNotice();const code=$('join-code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==5)return notice('Enter the five-character room code.',true);const result=await ask('room:join',{code,name:name()});if(!result?.ok)return notice(result?.error||'Could not join room.',true);clearNotice();});
 $('join-code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);});
 async function act(target){if(!room||busy)return;busy=true;render(room);const result=await ask('game:act',{target});busy=false;if(!result?.ok)notice(result?.error||'Action failed.',true,'game-notice');else clearNotice('game-notice');if(room)render(room);}
-$('self').addEventListener('click',()=>act('self'));$('opponent').addEventListener('click',()=>act('opponent'));
+$('self').addEventListener('click',()=>act('self'));
 $('reload').addEventListener('click',async()=>{if(!room||busy)return;busy=true;render(room);const result=await ask('game:reload',{});busy=false;if(!result?.ok)notice(result?.error||'Reload failed.',true,'game-notice');if(room)render(room);});
 $('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('room-code').textContent);notice('Room code copied. Send it to your opponent.',false,'game-notice');}catch{notice('Copy unavailable here — select the room code and copy it manually.',true,'game-notice');}});
 $('leave').addEventListener('click',()=>{socket.emit('room:leave');room=null;busy=false;$('game').classList.add('hidden');$('setup').classList.remove('hidden');notice('You left the room. Create a new room to play again.');});
